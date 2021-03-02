@@ -58,19 +58,28 @@ class TasksController extends Controller
     public function show($id)
     {
         $task = Task::findOrFail($id);
-
-        return view('tasks.show', [
+        if (\Auth::id() === $task->user_id) {
+            return view('tasks.show', [
             'task' => $task,
         ]);
+        }
+
+        // 前のURLへリダイレクトさせる
+        return redirect('/');
     }
 
     public function edit($id)
     {
         $task = Task::findOrFail($id);
-
-        return view('tasks.edit', [
+        
+        if (\Auth::id() === $task->user_id) {
+            return view('tasks.edit', [
             'task' => $task,
         ]);
+        }
+
+        // 前のURLへリダイレクトさせる
+        return redirect('/');
     }
 
     public function update(Request $request, $id)
@@ -82,14 +91,11 @@ class TasksController extends Controller
         ]);
         
         $task = Task::findOrFail($id);
-        // $request->user()->tasks()->create([
-        //     'status' => $request->status,
-        //     'content' => $request->content,
-        // ]);
-        
-        $task->status = $request->status;
-        $task->content = $request->content;
-        $task->save();
+         if (\Auth::id() === $task->user_id) {
+             $task->status = $request->status;
+            $task->content = $request->content;
+            $task->save();
+         }
         
         // 前のURLへリダイレクトさせる
         return redirect('/');
